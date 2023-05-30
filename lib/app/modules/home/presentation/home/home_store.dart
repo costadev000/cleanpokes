@@ -17,25 +17,39 @@ abstract class _HomeStoreBase with Store {
   @observable
   var resPokemon = ObservableList<PokemonDto>();
 
+  @observable
+  bool loading = false;
+
   _HomeStoreBase(this._getPokemonsUseCase);
 
   Future<void> getPokemons() async {
+    loading = true;
     var res = await _getPokemonsUseCase();
     if (!res.success) {
       print(res.message);
+    } else {
+      loading = false;
+      resPokemon.addAll(res.body);
     }
-    resPokemon.addAll(res.body);
   }
 
-  @action
   Future<void> nextPage() async {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      var res = await _getPokemonsUseCase.next();
-      if (!res.success) {
-        print(res.message);
-      }
+    loading = true;
+    var res = await _getPokemonsUseCase.next();
+    if (!res.success) {
+      print(res.message);
+      loading = false;
+    } else {
+      loading = false;
       resPokemon.addAll(res.body);
+    }
+  }
+
+  void scrollListener() async {
+    if (scrollController.position.pixels ==
+            scrollController.position.maxScrollExtent &&
+        !loading) {
+      await nextPage();
     }
   }
 }

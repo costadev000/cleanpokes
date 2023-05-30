@@ -41,19 +41,28 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
-  late final _$nextPageAsyncAction =
-      AsyncAction('_HomeStoreBase.nextPage', context: context);
+  late final _$loadingAtom =
+      Atom(name: '_HomeStoreBase.loading', context: context);
 
   @override
-  Future<void> nextPage() {
-    return _$nextPageAsyncAction.run(() => super.nextPage());
+  bool get loading {
+    _$loadingAtom.reportRead();
+    return super.loading;
+  }
+
+  @override
+  set loading(bool value) {
+    _$loadingAtom.reportWrite(value, super.loading, () {
+      super.loading = value;
+    });
   }
 
   @override
   String toString() {
     return '''
 scrollController: ${scrollController},
-resPokemon: ${resPokemon}
+resPokemon: ${resPokemon},
+loading: ${loading}
     ''';
   }
 }
