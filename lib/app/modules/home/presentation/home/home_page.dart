@@ -62,9 +62,8 @@ class _HomePageState extends State<HomePage> {
           Observer(builder: (_) {
             return Positioned(
               bottom: 50,
-              child: controller.loading
-                  ? Center(child: CustomLoading())
-                  : Container(),
+              left: MediaQuery.of(context).size.height * .5,
+              child: controller.loading ? CustomLoading() : Container(),
             );
           }),
         ],
