@@ -1,5 +1,6 @@
 import 'package:cleanpokes/app/modules/home/presentation/home/home_store.dart';
 import 'package:cleanpokes/app/modules/home/presentation/home/widgets/custom_loading_widget.dart';
+import 'package:cleanpokes/app/modules/home/presentation/home/widgets/pokemon_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -35,39 +36,34 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Titulo")),
-      body: Stack(
-        children: [
-          Observer(builder: (_) {
-            return ListView.builder(
+      body: Observer(builder: (_) {
+        return Stack(
+          children: [
+            CustomScrollView(
               controller: controller.scrollController,
-              itemCount: controller.resPokemon.length,
-              itemBuilder: (_, index) {
-                final pokemon = controller.resPokemon[index];
-                return ListTile(
-                  leading: Image.network(
-                      pokemon.sprites!['front_default'].toString(),
-                      loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    } else {
-                      return CustomLoading();
-                    }
-                  }),
-                  title: Text("#${pokemon.order} ${pokemon.name}"),
-                );
-              },
-            );
-          }),
-          Observer(builder: (_) {
-            return Positioned(
-              bottom: 50,
-              left: MediaQuery.of(context).size.height * .5,
+              slivers: [
+                SliverAppBar(
+                  title: Text("Pokedex"),
+                  backgroundColor: Colors.red,
+                ),
+                SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, mainAxisSpacing: 10),
+                  itemCount: controller.resPokemon.length,
+                  itemBuilder: (_, index) {
+                    return PokemonCard(context, controller.resPokemon[index]);
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 40,
+              left: MediaQuery.of(context).size.width * .5,
               child: controller.loading ? CustomLoading() : Container(),
-            );
-          }),
-        ],
-      ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
